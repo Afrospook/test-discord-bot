@@ -1,0 +1,80 @@
+import discord
+import datetime
+from discord.ext.commands import Bot
+from discord.ext import commands
+import asyncio
+import platform
+import datetime
+import random
+import os
+
+prefix = "?"
+
+#Def log method
+def log(Message):
+    print(str(datetime.datetime.now())+ '   ' + str(Message))
+
+#Def Method to read token from the file
+def getToken():
+    #If token file doesn't exist, create it
+    if(not os.path.exists("token.txt")):
+        tFile = open("token.txt", "w+")
+        tFile.write("")
+        tFile.close()
+    
+    #Read file
+    tokenFile = open('token.txt','r')
+    token = tokenFile.read()
+    if(token == ""):
+        log("Token empty, exiting...")
+        quit(0)
+    return token
+    
+#Define client
+client = Bot(description='', command_prefix=prefix, pm_help = False)
+
+#Startup sequence
+@client.event
+async def on_ready():
+    log('Current Discord.py Version: ' + str(discord.__version__))
+    log('Current Python Version: ' + str(platform.python_version()))
+    log('Initialising...')
+    log('Logged in as '+client.user.name+' (ID:'+str(client.user.id)+')')
+    log('')
+    log('Ready!')
+    return await client.change_presence(status=discord.Status.idle, activity=discord.Game("with myself")) 
+
+#def commands():
+commands=("ping" "users" "") 
+
+
+
+#Commands
+@client.event
+async def on_message(message):
+    if(message.content[0] == prefix):
+        if(message.content == prefix + "ping"):
+            await message.channel.send("Pong!")
+        #elif(message.content == prefix + "hello"):
+            #await message.channel.send(str(len(message.channel.members)))
+        elif(message.content == prefix + "users"):
+            guildListCount=str(message.guild.member_count)
+            await message.channel.send(guildListCount + " users are in your server")
+        elif(message.content == prefix + "members"):
+            memberList=(message.channel.members)
+            await message.channel.send(memberList)
+        #fetching what games are being played at current in the server
+        elif(message.content == prefix + "games"):
+            def activeGames():
+                str(message.guild.member.status.online_count)
+                list(str(message.guild.member.game))
+            await message.channel.send(activeGames())
+        else:
+            await message.channel.send("stop hitting yourself")
+
+
+
+
+#Run bot
+log("Starting bot...")
+client.run(str(getToken()))
